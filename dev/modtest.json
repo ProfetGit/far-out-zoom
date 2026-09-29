@@ -1,0 +1,159 @@
+{
+  "id": "far_out_zoom",
+  "user": "NestTester",
+  "out_prop": "far_out_zoom.demo",
+  "scenes_prop": "far_out_zoom.demo.scenes",
+  "props": {
+    "far_out_zoom.demo.frames": "{frames}",
+    "modtest.tickrate": "{tickrate}",
+    "far_out_zoom.debug.dh": "{dhdebug}"
+  },
+  "defaults": {
+    "frames": "false",
+    "tickrate": "",
+    "dhdebug": "false"
+  },
+  "world": "dev/demo/.work/world-{mc}",
+  "world_fallback": "dev/demo/.work/world-26.3",
+  "options": {
+    "fps": 60,
+    "volume": 0.0001,
+    "render_distance": 12
+  },
+  "log_errors": "Far Out Zoom: .*(failed|cannot)",
+  "scenes": [
+    "zoom",
+    "scroll",
+    "sens",
+    "far",
+    "range",
+    "fog",
+    "screen",
+    "toggle",
+    "hybrid",
+    "hotbar"
+  ],
+  "smoke": [
+    "zoom",
+    "scroll",
+    "far"
+  ],
+  "addons": {
+    "profile": {
+      "profile": {
+        "26.3": "Fabric 26.3"
+      },
+      "mods": [
+        "sodium-*.jar",
+        "iris-*.jar",
+        "fabric-api-*.jar",
+        "modmenu-*.jar",
+        "entityculling-*.jar",
+        "punchy-*.jar",
+        "ferritecore-*.jar"
+      ],
+      "packs": []
+    },
+    "shaders": {
+      "profile": {
+        "26.3": "Fabric 26.3"
+      },
+      "mods": [
+        "sodium-*.jar",
+        "iris-*.jar",
+        "fabric-api-*.jar",
+        "modmenu-*.jar",
+        "entityculling-*.jar",
+        "punchy-*.jar",
+        "ferritecore-*.jar"
+      ],
+      "packs": [],
+      "shaders": true
+    },
+    "dh": {
+      "profile": {
+        "26.2": "DH 26.2"
+      },
+      "mods": [
+        "DistantHorizons-*.jar",
+        "fabric-api-*.jar",
+        "sodium-fabric-*.jar"
+      ],
+      "packs": []
+    }
+  },
+  "tiers": {
+    "quick": {
+      "jobs": [
+        {
+          "mc": "26.3",
+          "loader": "fabric",
+          "scenes": "smoke"
+        }
+      ]
+    },
+    "full": {
+      "jobs": [
+        {
+          "mc": [
+            "26.3",
+            "26.2"
+          ],
+          "loader": "fabric",
+          "scenes": "all"
+        },
+        {
+          "mc": [
+            "26.3",
+            "26.2"
+          ],
+          "loader": [
+            "neoforge",
+            "forge"
+          ],
+          "scenes": "smoke"
+        }
+      ]
+    },
+    "release": {
+      "jobs": [
+        {
+          "mc": [
+            "26.3",
+            "26.2"
+          ],
+          "loader": [
+            "fabric",
+            "neoforge",
+            "forge"
+          ],
+          "scenes": "all"
+        },
+        {
+          "mc": "26.3",
+          "loader": "fabric",
+          "scenes": "all",
+          "addons": [
+            "profile"
+          ]
+        },
+        {
+          "mc": "26.3",
+          "loader": "fabric",
+          "scenes": "all",
+          "addons": [
+            "shaders"
+          ]
+        },
+        {
+          "mc": "26.2",
+          "loader": "fabric",
+          "scenes": "horizon",
+          "addons": [
+            "dh"
+          ]
+        }
+      ]
+    }
+  }
+}

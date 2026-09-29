@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.profetgit.farout.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "client.AtmosphericFogEnvironmentMixin",
+    "client.BlockEntityRenderDispatcherMixin",
+    "client.CameraMixin",
+    "client.ClientLanguageMixin",
+    "client.EntityMixin",
+    "client.GameRendererMixin",
+    "client.HudInvoker",
+    "client.HudMixin",
+    "client.KeyMappingMixin",
+    "client.MinecraftMixin",
+    "client.MouseHandlerMixin",
+    "client.OptionsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

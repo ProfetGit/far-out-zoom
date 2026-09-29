@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "far_out_zoom"
+version = "${version}"
+displayName = "${name}"
+authors = "${author}"
+displayURL = "${homepage}"
+description = '''${description}'''
+displayTest = "IGNORE_ALL_VERSION"
+logoFile = "assets/far_out_zoom/icon.png"
+logoBlur = false
+
+[[mixins]]
+config = "far_out_zoom.mixins.json"
+
+[[dependencies.far_out_zoom]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${mc},${mc_next})"
+ordering = "NONE"
+side = "CLIENT"

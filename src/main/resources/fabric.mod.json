@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "far_out_zoom",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "${description}",
+  "authors": ["${author}"],
+  "contact": { "homepage": "${homepage}" },
+  "license": "LicenseRef-All-Rights-Reserved",
+  "icon": "assets/far_out_zoom/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["io.github.profetgit.farout.platform.fabric.FabricEntry"],
+    "modmenu": ["io.github.profetgit.farout.platform.fabric.ModMenuEntry"]
+  },
+  "mixins": ["far_out_zoom.mixins.json"],
+  "depends": {
+    "fabricloader": ">=${fabric_loader}",
+    "minecraft": "~${mc}",
+    "java": ">=25"
+  }
+}
