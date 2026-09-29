@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- The zoom animation now runs on Minecraft's frame timer instead of the system clock. It feels the same in play, and screen recorders that capture the game frame by frame now show the zoom at its real speed.
+
 ## 0.2.2
 
 - Fixed: with Iris shaders on, the hand no longer stayed in view while zoomed (Iris draws the hand its own way).

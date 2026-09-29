@@ -11,9 +11,11 @@ import net.minecraft.sounds.SoundEvents;
 /**
  * The zoom: key handling, the magnification spring and what the rest of the mod reads from it.
  * <p>
- * The magnification moves on a spring in log space (u = ln magnification), advanced every frame on real time, so 2x to
- * 4x feels the same as 16x to 32x and the motion doesn't depend on the frame rate. Zooming in is slightly underdamped
- * (a small overshoot that settles), zooming out is quicker and nearly critical.
+ * The magnification moves on a spring in log space (u = ln magnification), advanced every frame by Minecraft's frame
+ * clock (real time in play), so 2x to 4x feels the same as 16x to 32x and the motion doesn't depend on the frame rate.
+ * Zooming in is slightly underdamped (a small overshoot that settles), zooming out is quicker and nearly critical.
+ * The frame clock and not System.nanoTime: a recorder that steps the game one video frame at a time steps it too, so a
+ * recording shows the zoom at its real speed however slowly the frames render.
  */
 public final class Zoom {
     /** One scroll notch: a factor of sqrt 2 (2x, 2.8x, 4x, 5.7x, 8x, ...). */
@@ -25,7 +27,7 @@ public final class Zoom {
     static final SystemToast.SystemToastId NOTICE = new SystemToast.SystemToastId(8_000L);
 
     static boolean active, sticky, suppress, wasDown;
-    static long pressNanos, lastPressNanos, lastNanos;
+    static long pressNanos, lastPressNanos;
     static double level = Double.NaN;
     /** Log magnification and its speed. */
     static double u, v;
@@ -39,9 +41,8 @@ public final class Zoom {
 
     /** Once per frame, before the camera is set up. */
     public static void frame(Minecraft mc) {
-        long now = System.nanoTime();
-        double dt = lastNanos == 0 ? 0 : Math.min(0.1, (now - lastNanos) / 1e9);
-        lastNanos = now;
+        long now = System.nanoTime();              // key timing (taps) stays on the wall clock
+        double dt = Math.min(0.1, mc.getDeltaTracker().getRealtimeDeltaTicks() / 20.0);
         Config c = Config.get();
         if (Double.isNaN(level)) level = c.defaultZoom;
         if (mc.player == null || mc.level == null || !mc.player.isAlive()) {

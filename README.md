@@ -10,7 +10,7 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/camp.gif" alt="Hold C: the camp on the far shore springs into view" width="49%">
 <img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/creeper.gif" alt="Scroll in on a creeper 115 blocks away, just as it goes off" width="49%">
-<img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/village.gif" alt="Scroll in on a village 200 blocks away" width="49%">
+<img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/village.gif" alt="Scroll in on a village 240 blocks away" width="49%">
 </p>
 
 ![Features](https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/desc/title-features.png)
