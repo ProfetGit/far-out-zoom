@@ -7,6 +7,12 @@
 
 **The horizon, up close.** Hold C and the view springs in on whatever is out there: a creeper on the far hill, a village across the valley, a friend's base on the horizon. Scroll to zoom further, up to 64x, with aim that stays steady and far mobs that stay visible. Client-side only, for Fabric, Quilt, NeoForge and Forge on Minecraft 26.2 and 26.3.
 
+<p align="center">
+<img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/camp.gif" alt="Hold C: the camp on the far shore springs into view" width="49%">
+<img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/creeper.gif" alt="Scroll in on a creeper 115 blocks away, just as it goes off" width="49%">
+<img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/village.gif" alt="Scroll in on a village 200 blocks away" width="49%">
+</p>
+
 ![Features](https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/desc/title-features.png)
 
 - **Springy zoom**: glides in with a small, satisfying overshoot, and smooth at any frame rate.

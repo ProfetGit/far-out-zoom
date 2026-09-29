@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Fixed: with Iris shaders on, the hand no longer stayed in view while zoomed (Iris draws the hand its own way).
+
 ## 0.2.1
 
 - Renamed to Far Out Zoom (mod id `far_out_zoom`, config `config/far_out_zoom.json`), so zoom searches find it. Never released as Far Out.

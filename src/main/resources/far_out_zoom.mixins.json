@@ -10,6 +10,7 @@
     "client.ClientLanguageMixin",
     "client.EntityMixin",
     "client.GameRendererMixin",
+    "client.HandsMixin",
     "client.HudInvoker",
     "client.HudMixin",
     "client.KeyMappingMixin",
