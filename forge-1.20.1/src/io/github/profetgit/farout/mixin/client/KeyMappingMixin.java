@@ -23,9 +23,5 @@ public abstract class KeyMappingMixin {
     }
 
     //? if <1.21.9 {
-    /*@Inject(method = "resetMapping", at = @At("RETURN"))
-    private static void farout$zoomKeyWins(org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
-        KeyMappingAccess.farout$map().put(((KeyMappingAccess) io.github.profetgit.farout.client.Keys.ZOOM).farout$key(), io.github.profetgit.farout.client.Keys.ZOOM);
-    }
-    *///?}
+    //?}
 }

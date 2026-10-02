@@ -1,0 +1,28 @@
+[
+  {
+    "regex": "net\\.minecraft\\.client\\.gui\\.screens\\.options\\.OptionsSubScreen",
+    "to": "net.minecraft.client.gui.screens.OptionsSubScreen",
+    "when": "<1.21"
+  },
+  {
+    "regex": "new SystemToast\\.SystemToastId\\(8_000L\\)",
+    "to": "SystemToast.SystemToastIds.PERIODIC_NOTIFICATION",
+    "when": "<1.21"
+  },
+  {
+    "from": "SystemToastId",
+    "to": "SystemToastIds",
+    "when": "<1.21"
+  },
+  {
+    "regex": "list\\.addSmall\\(",
+    "to": "Compat.small(list, ",
+    "when": "<1.21"
+  },
+  {
+    "regex": "ResourceLocation(?:/\\*\\*/)?\\.withDefaultNamespace\\(([^)]*)\\)",
+    "to": "new ResourceLocation($1)",
+    "when": "<1.21",
+    "groups": "1"
+  }
+]

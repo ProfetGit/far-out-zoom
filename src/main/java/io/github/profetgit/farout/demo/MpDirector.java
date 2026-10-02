@@ -46,7 +46,7 @@ final class MpDirector {
         int start = visit ? 800 : 160;
         if (tick == start) {
             aimAt = tick;
-            mc.gui.hud.getChat().clearMessages(false);
+            io.github.profetgit.farout.client.Compat.chat(mc).clearMessages(false);
             Director.record();
             System.out.println("[cndemo] mp " + CASE + " aiming at the wall");
         }

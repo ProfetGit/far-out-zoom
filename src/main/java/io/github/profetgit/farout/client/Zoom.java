@@ -42,7 +42,7 @@ public final class Zoom {
     /** Once per frame, before the camera is set up. */
     public static void frame(Minecraft mc) {
         long now = System.nanoTime();              // key timing (taps) stays on the wall clock
-        double dt = Math.min(0.1, mc.getDeltaTracker().getRealtimeDeltaTicks() / 20.0);
+        double dt = Math.min(0.1, Compat.realtimeTicks(mc) / 20.0);
         Config c = Config.get();
         if (Double.isNaN(level)) level = c.defaultZoom;
         if (mc.player == null || mc.level == null || !mc.player.isAlive()) {
@@ -55,14 +55,14 @@ public final class Zoom {
             if (!noticeChecked) notice(mc, c);
         }
         while (Keys.SETTINGS.consumeClick()) {
-            if (mc.gui.screen() == null) mc.gui.setScreen(new ZoomConfigScreen(null));
+            if (Compat.screen(mc) == null) Compat.setScreen(mc, new ZoomConfigScreen(null));
         }
         step(dt, c);
     }
 
     static void input(Minecraft mc, Config c, long now) {
         // an open screen (chat, inventory, pause) has the keyboard: the zoom key counts as up
-        boolean down = Keys.ZOOM.isDown() && mc.gui.screen() == null;
+        boolean down = Keys.ZOOM.isDown() && Compat.screen(mc) == null;
         int clicks = 0;
         while (Keys.ZOOM.consumeClick()) clicks++;
         boolean pressed = down && !wasDown;
@@ -112,7 +112,7 @@ public final class Zoom {
             return;
         }
         if (!active || sticky) return;
-        if (now - pressNanos < TAP_NANOS && mc.gui.screen() == null) sticky = true;
+        if (now - pressNanos < TAP_NANOS && Compat.screen(mc) == null) sticky = true;
         else stop(mc);
     }
 
@@ -155,7 +155,7 @@ public final class Zoom {
     /** The scroll wheel while zoomed; true when it was used for the zoom. */
     public static boolean scroll(double dy) {
         Config c = Config.get();
-        if (!active || !c.scrollZoom || dy == 0 || Minecraft.getInstance().gui.screen() != null) return false;
+        if (!active || !c.scrollZoom || dy == 0 || Compat.screen(Minecraft.getInstance()) != null) return false;
         level = Math.max(MIN, Math.min(c.maxZoom, level * Math.exp(dy * NOTCH)));
         int n = notch(level);
         if (n != lastNotch) {
@@ -185,7 +185,7 @@ public final class Zoom {
     static void notice(Minecraft mc, Config c) {
         noticeChecked = true;
         if (c.keyNoticeShown || !sharesHotbarKey(mc)) return;
-        SystemToast.add(mc.gui.toastManager(), NOTICE, Component.literal("Far Out Zoom: zoom is on " + Keys.ZOOM.getTranslatedKeyMessage().getString()),
+        Compat.notice(mc, NOTICE, Component.literal("Far Out Zoom: zoom is on " + Keys.ZOOM.getTranslatedKeyMessage().getString()),
             Component.literal("Save Hotbar Activator shares the key and is paused. Rebind either in Controls."));
         c.keyNoticeShown = true;
         Config.save();

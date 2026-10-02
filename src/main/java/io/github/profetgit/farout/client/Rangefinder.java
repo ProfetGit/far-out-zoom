@@ -45,9 +45,9 @@ public final class Rangefinder {
         long now = System.nanoTime();
         if (lastNanos != 0 && now - lastNanos < INTERVAL) return;
         lastNanos = now;
-        Camera cam = mc.gameRenderer.mainCamera();
-        Vec3 from = cam.position();
-        Vector3fc f = cam.forwardVector();
+        Camera cam = Compat.camera(mc);
+        Vec3 from = Compat.position(cam);
+        Vector3fc f = Compat.look(cam);
         Vec3 dir = new Vec3(f.x(), f.y(), f.z()).normalize();
         double reach = mc.options.getEffectiveRenderDistance() * 16 + 32;
         Vec3 to = from.add(dir.scale(reach));

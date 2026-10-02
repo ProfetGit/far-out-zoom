@@ -31,17 +31,25 @@
     "screen",
     "toggle",
     "hybrid",
-    "hotbar"
+    "hotbar",
+    "controls",
+    "overlays"
   ],
   "smoke": [
     "zoom",
     "scroll",
-    "far"
+    "far",
+    "controls"
   ],
   "addons": {
     "profile": {
       "profile": {
-        "26.3": "Fabric 26.3"
+        "26.3": "Fabric 26.3",
+        "1.21.11": "Fabric 1.21.11",
+        "1.21.8": "Fabric 1.21.8",
+        "1.21.4": "Fabric 1.21.4",
+        "1.21.1": "Fabric 1.21.1",
+        "1.20.1": "Fabric 1.20.1"
       },
       "mods": [
         "sodium-*.jar",
@@ -80,6 +88,25 @@
         "sodium-fabric-*.jar"
       ],
       "packs": []
+    },
+    "legacy_all": {
+      "profile": {
+        "1.21.11": "Fabric 1.21.11",
+        "1.21.8": "Fabric 1.21.8",
+        "1.21.4": "Fabric 1.21.4",
+        "1.21.1": "Fabric 1.21.1"
+      },
+      "mods": [
+        "fabric-api*.jar",
+        "modmenu*.jar",
+        "tidypockets*.jar",
+        "travelers_lantern*.jar",
+        "havingablast*.jar",
+        "mobreactions*.jar",
+        "Veinminer*.jar",
+        "Timber*.jar",
+        "Enchanted*.jar"
+      ]
     }
   },
   "tiers": {
@@ -97,7 +124,12 @@
         {
           "mc": [
             "26.3",
-            "26.2"
+            "26.2",
+            "1.21.11",
+            "1.21.8",
+            "1.21.4",
+            "1.21.1",
+            "1.20.1"
           ],
           "loader": "fabric",
           "scenes": "all"

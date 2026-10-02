@@ -1,12 +1,12 @@
 package io.github.profetgit.farout.mixin.client;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.Hud;
+import net.minecraft.client.gui./*$ gfx*/ GuiGraphicsExtractor /**/;
+import net.minecraft.client.gui./*$ gui*/ Hud /**/;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Hud.class)
+@Mixin(/*$ gui*/ Hud /**/.class)
 public interface HudInvoker {
-    @Invoker("extractSpyglassOverlay")
-    void farout$spyglass(GuiGraphicsExtractor graphics, float scale);
+    @Invoker(/*$ spyglass*/ "extractSpyglassOverlay" /**/)
+    void farout$spyglass(/*$ gfx*/ GuiGraphicsExtractor /**/ graphics, float scale);
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 public final class Lang {
     private static final Map<String, String> EN = Map.of(
         "key.category.far_out_zoom.far_out_zoom", "Far Out Zoom",
+        "key.categories.far_out_zoom", "Far Out Zoom",
         "key.far_out_zoom.zoom", "Zoom",
         "key.far_out_zoom.settings", "Zoom settings");
 

@@ -7,8 +7,6 @@ import io.github.profetgit.farout.client.Keys;
 import io.github.profetgit.farout.client.Rangefinder;
 import io.github.profetgit.farout.client.Zoom;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,13 +19,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.MouseHandler;
+import io.github.profetgit.farout.mixin.client.MouseHandlerDemoMixin;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal./*$ cow*/ cow.Cow /**/;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -43,6 +41,7 @@ public final class Director {
     private static final String DIR = System.getProperty("far_out_zoom.demo");
     public static final boolean ACTIVE = DIR != null;
     static final Path OUT = Path.of(ACTIVE ? DIR : ".");
+    static String settingsError = "";
     static final String[] SCENES = System.getProperty("far_out_zoom.demo.scenes", "zoom,scroll").split(",");
     static final boolean FRAMES = !"false".equals(System.getProperty("far_out_zoom.demo.frames"));
     static final ExecutorService WRITER = Executors.newFixedThreadPool(4, r -> {
@@ -115,7 +114,7 @@ public final class Director {
             "summon minecraft:cow 110.5 " + (G + 1) + " 0.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}",
             "tp " + p + " 0.5 " + (G + 1) + " 0.5 -90 0");
         mc.options.setCameraType(CameraType.FIRST_PERSON);
-        mc.player.getInventory().setSelectedSlot(0);
+        io.github.profetgit.farout.client.Compat.selectSlot(mc, 0);
         Config c = Config.get();
         c.mode = Config.Mode.HOLD;
         c.defaultZoom = 4;
@@ -127,8 +126,9 @@ public final class Director {
         return switch (s) {
             case "zoom", "scroll", "range" -> 90;
             case "far", "fog" -> 70;
-            case "sens", "hotbar" -> 40;
+            case "sens", "hotbar", "controls" -> 40;
             case "screen", "toggle", "hybrid" -> 80;
+            case "overlays" -> 150;
             case "show" -> 200;
             case "horizon" -> 700;
             default -> 60;
@@ -167,23 +167,23 @@ public final class Director {
             }
             case "scroll" -> {
                 hold(t >= 5 && t < 80);
-                if (t == 10) slotBefore = mc.player.getInventory().getSelectedSlot();
+                if (t == 10) slotBefore = io.github.profetgit.farout.client.Compat.slot(mc);
                 if (t == 20) scroll(mc, 1);
                 if (t == 22) scroll(mc, 1);
                 if (t == 45) {
                     double fov = fov(mc), want = expected(baseFov, 8);
                     check("two_notches", Math.abs(Zoom.level() - 8) < 1e-6 && Math.abs(fov - want) < want * 0.01,
                         String.format(Locale.ROOT, "level %.4f, fov %.3f want %.3f", Zoom.level(), fov, want));
-                    check("hotbar_kept", mc.player.getInventory().getSelectedSlot() == slotBefore, "selected slot " + mc.player.getInventory().getSelectedSlot() + ", was " + slotBefore);
+                    check("hotbar_kept", io.github.profetgit.farout.client.Compat.slot(mc) == slotBefore, "selected slot " + io.github.profetgit.farout.client.Compat.slot(mc) + ", was " + slotBefore);
                     for (int i = 0; i < 20; i++) scroll(mc, -1);
                 }
                 if (t == 50) check("min_clamp", Math.abs(Zoom.level() - Zoom.MIN) < 1e-6, String.format(Locale.ROOT, "level %.4f after scrolling far out", Zoom.level()));
                 if (t == 55) for (int i = 0; i < 40; i++) scroll(mc, 1);
                 if (t == 60) check("max_clamp", Math.abs(Zoom.level() - Config.get().maxZoom) < 1e-6, String.format(Locale.ROOT, "level %.2f, max %.0f", Zoom.level(), Config.get().maxZoom));
                 if (t == 85) {
-                    int before = mc.player.getInventory().getSelectedSlot();
+                    int before = io.github.profetgit.farout.client.Compat.slot(mc);
                     scroll(mc, -1);
-                    check("scroll_unzoomed", mc.player.getInventory().getSelectedSlot() != before, "not zoomed, the wheel changes the hotbar slot again");
+                    check("scroll_unzoomed", io.github.profetgit.farout.client.Compat.slot(mc) != before, "not zoomed, the wheel changes the hotbar slot again");
                 }
             }
             case "sens" -> {
@@ -206,7 +206,7 @@ public final class Director {
                 if (t == 45) {
                     Entity cow = cow(mc);
                     BlockEntity sign = mc.level.getBlockEntity(new BlockPos(100, G + 4, 4));
-                    check("zoom_draws_far", cow != null && drawn(mc, cow) && sign != null && drawn(mc, sign), "cow and sign drawn at 4x");
+                    check("zoom_draws_far", cow != null && drawn(mc, cow) && sign != null && drawn(mc, sign), cow == null || sign == null ? "cow or sign missing" : "cow drawn " + drawn(mc, cow) + ", sign drawn " + drawn(mc, sign) + " at 4x");
                 }
             }
             case "range" -> {
@@ -228,17 +228,49 @@ public final class Director {
             }
             case "fog" -> {
                 hold(t >= 5 && t < 50);
+                //? if >=1.21.6 {
                 if (t == 40) check("haze_thins", Math.abs(Zoom.hazeApplied - 2) < 0.02, String.format(Locale.ROOT, "haze distance x%.3f at 4x (want x2)", Zoom.hazeApplied));
                 if (t == 65) check("haze_back", Zoom.hazeScale() <= 1.0001, String.format(Locale.ROOT, "haze x%.3f after zooming out", Zoom.hazeScale()));
+                //?}
             }
             case "screen" -> {
                 // the key stays physically held the whole time; a screen takes the keyboard while it is open
                 hold(t >= 5 && t < 60);
-                if (t == 25) mc.gui.setScreen(new ChatScreen("", false));
+                if (t == 25) io.github.profetgit.farout.client.Compat.setScreen(mc, io.github.profetgit.farout.client.Compat.chatScreen());
                 if (t == 32) check("screen_scroll", !Zoom.scroll(1), "the wheel belongs to the screen");
                 if (t == 30) check("screen_releases", !Zoom.active(), "opening chat lets go of a held zoom");
-                if (t == 35) mc.gui.setScreen(null);
+                if (t == 35) io.github.profetgit.farout.client.Compat.setScreen(mc, null);
                 if (t == 75) check("closed_clean", !Zoom.zoomed(), "no zoom left after the screen closed");
+            }
+            case "overlays" -> {
+                // the vignette and scope frame the zoomed view; the settings screen builds and shows
+                hold(t >= 5 && t < 100);
+                if (t == 8) Config.get().overlay = Config.Overlay.VIGNETTE;
+                if (t == 40) Config.get().overlay = Config.Overlay.SPYGLASS;
+                if (t == 90) Config.get().overlay = Config.Overlay.NONE;
+                if (t == 105) {
+                    try {
+                        io.github.profetgit.farout.client.Compat.setScreen(mc, new io.github.profetgit.farout.client.ZoomConfigScreen(null));
+                        settingsError = "";
+                    } catch (Throwable e) {
+                        settingsError = e.toString();
+                    }
+                }
+                if (t == 125) check("settings_screen", settingsError.isEmpty() && io.github.profetgit.farout.client.Compat.screen(mc) instanceof io.github.profetgit.farout.client.ZoomConfigScreen,
+                    settingsError.isEmpty() ? "the settings screen builds and stays open" : settingsError);
+                if (t == 130) io.github.profetgit.farout.client.Compat.setScreen(mc, null);
+            }
+            case "controls" -> {
+                // the Controls screen sorts every binding (category order first); an unknown category used to crash it
+                if (t == 5) {
+                    String err = "";
+                    try {
+                        java.util.Arrays.stream(mc.options.keyMappings).sorted().count();
+                    } catch (RuntimeException e) {
+                        err = e.toString();
+                    }
+                    check("controls_sort", err.isEmpty(), err.isEmpty() ? "all bindings sort" : err);
+                }
             }
             case "toggle" -> {
                 if (t == 5) KeyMapping.click(Keys.ZOOM.getDefaultKey());
@@ -298,18 +330,26 @@ public final class Director {
 
     /** The real entity check (distance, frustum, and whatever render mods add to it, e.g. Sodium's section culling). */
     static boolean drawn(Minecraft mc, Entity e) {
-        var cam = mc.gameRenderer.mainCamera();
-        Vec3 p = cam.position();
+        //? if >=26.2 {
+        var cam = io.github.profetgit.farout.client.Compat.camera(mc);
+        Vec3 p = io.github.profetgit.farout.client.Compat.position(cam);
         //? if >=26.3 {
-        return mc.getEntityRenderDispatcher().shouldRender(e, cam.getCullFrustum(), p.x, p.y, p.z, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        return mc.getEntityRenderDispatcher().shouldRender(e, cam.getCullFrustum(), p.x, p.y, p.z, io.github.profetgit.farout.client.Compat.partial(mc));
         //?} else {
         /*return mc.getEntityRenderDispatcher().shouldRender(e, cam.getCullFrustum(), p.x, p.y, p.z);
+        *///?}
+        //?} else {
+        /*return DemoDrawn.entityDrawn(e.getX(), e.getY(), e.getZ());
         *///?}
     }
 
     static boolean drawn(Minecraft mc, BlockEntity be) {
-        float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        //? if >=26.2 {
+        float partial = io.github.profetgit.farout.client.Compat.partial(mc);
         return mc.getBlockEntityRenderDispatcher().tryExtractRenderState(be, partial, null, false) != null;
+        //?} else {
+        /*return DemoDrawn.blockEntityDrawn(be.getBlockPos());
+        *///?}
     }
 
     static double expected(double fov, double mag) {
@@ -317,7 +357,11 @@ public final class Director {
     }
 
     static double fov(Minecraft mc) {
-        return mc.gameRenderer.mainCamera().getFov();
+        //? if >=26.2 {
+        return io.github.profetgit.farout.client.Compat.camera(mc).getFov();
+        //?} else {
+        /*return ((io.github.profetgit.farout.mixin.client.GameRendererDemoMixin) mc.gameRenderer).farout$fov(io.github.profetgit.farout.client.Compat.camera(mc), io.github.profetgit.farout.client.Compat.partial(mc), true);
+        *///?}
     }
 
     static void hold(boolean down) {
@@ -341,34 +385,22 @@ public final class Director {
 
     /** The real scroll path (MouseHandler.onScroll), as a wheel notch up (+) or down (-). */
     static void scroll(Minecraft mc, double dy) {
-        try {
-            Method m = MouseHandler.class.getDeclaredMethod("onScroll", long.class, double.class, double.class);
-            m.setAccessible(true);
-            m.invoke(mc.mouseHandler, mc.getWindow().handle(), 0.0, dy);
-        } catch (ReflectiveOperationException e) {
-            check("scroll_call", false, e.toString());
-        }
+        ((MouseHandlerDemoMixin) mc.mouseHandler).farout$scroll(io.github.profetgit.farout.client.Compat.window(mc), 0.0, dy);
     }
 
     /** The real turn code (MouseHandler.turnPlayer) for a mouse move of dx; returns the yaw change in degrees. */
     static double turn(Minecraft mc, double dx) {
-        try {
-            Field ax = MouseHandler.class.getDeclaredField("accumulatedDX");
-            Field ay = MouseHandler.class.getDeclaredField("accumulatedDY");
-            ax.setAccessible(true);
-            ay.setAccessible(true);
-            Method m = MouseHandler.class.getDeclaredMethod("turnPlayer", double.class);
-            m.setAccessible(true);
-            float before = mc.player.getYRot();
-            ax.setDouble(mc.mouseHandler, dx);
-            ay.setDouble(mc.mouseHandler, 0);
-            m.invoke(mc.mouseHandler, 0.0);
-            ax.setDouble(mc.mouseHandler, 0);
-            return mc.player.getYRot() - before;
-        } catch (ReflectiveOperationException e) {
-            check("turn_call", false, e.toString());
-            return Double.NaN;
-        }
+        MouseHandlerDemoMixin mouse = (MouseHandlerDemoMixin) mc.mouseHandler;
+        float before = mc.player.getYRot();
+        mouse.farout$dx(dx);
+        mouse.farout$dy(0);
+        //? if >=1.21 {
+        mouse.farout$turn(0.0);
+        //?} else {
+        /*mouse.farout$turn();
+        *///?}
+        mouse.farout$dx(0);
+        return mc.player.getYRot() - before;
     }
 
     static void record() {
@@ -400,7 +432,7 @@ public final class Director {
         if (!FRAMES) return;
         Path out = dir.resolve(String.format("f%05d.png", n));
         pending.incrementAndGet();
-        Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget(), (NativeImage img) -> WRITER.execute(() -> {
+        io.github.profetgit.farout.client.Compat.screenshot(io.github.profetgit.farout.client.Compat.renderTarget(mc), (NativeImage img) -> WRITER.execute(() -> {
             try (img) {
                 Files.createDirectories(dir);
                 img.writeToFile(out);
@@ -436,7 +468,7 @@ public final class Director {
     }
 
     static String name(Minecraft mc) {
-        return mc.player.getGameProfile().name();
+        return io.github.profetgit.farout.client.Compat.playerName(mc);
     }
 
     static void cmd(Minecraft mc, String... commands) {

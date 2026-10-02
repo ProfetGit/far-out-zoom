@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.7
+
+- Now also runs on Minecraft Java 1.20.1 (Fabric, Quilt and Forge). Nothing changes on the other versions.
+
+## 0.2.6
+
+- Fixed a crash when opening Controls on Minecraft Java 1.21.1, 1.21.4 and 1.21.8. Nothing changes on 26.2 and 26.3.
+
+## 0.2.5
+
+- Fixed the mod's textures and text missing on Minecraft Java 1.21.1, 1.21.4 and 1.21.8 (its resource pack metadata was in the 1.21.9 format). Nothing changes on 26.2 and 26.3.
+
+## 0.2.4
+
+- Now also runs on Minecraft Java 1.21.1, 1.21.4, 1.21.8 and 1.21.11 (Fabric). Nothing changes on 26.2 and 26.3.
+
 ## 0.2.3
 
 - The zoom animation now runs on Minecraft's frame timer instead of the system clock. It feels the same in play, and screen recorders that capture the game frame by frame now show the zoom at its real speed.

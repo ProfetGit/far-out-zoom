@@ -1,0 +1,96 @@
+// Forge 1.20.1 build of Far Out Zoom. Forge 1.20.1 is SRG-named at runtime and needs ForgeGradle 6 (the Stonecutter
+// project uses ForgeGradle 7 for 26.x), so this is a small project of its own that compiles the 1.20.1 sources
+// Stonecutter generated for the Fabric target (../versions/1.20.1-fabric) plus its own entry class.
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
+    id 'org.spongepowered.mixin'
+}
+
+def props = new Properties()
+file('../gradle.properties').withInputStream { props.load(it) }
+def modId = props['mod.id']
+version = "${props['mod.version']}+1.20.1-forge"
+group = props['mod.group']
+base { archivesName = modId }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            args '--username', 'NestTester'
+            mods { "${modId}" { source sourceSets.main } }
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "${modId}.refmap.json"
+    config "${modId}.mixins.json"
+}
+
+repositories {
+    mavenCentral()
+}
+
+jarJar.enable()
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.10'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
+    implementation(jarJar('io.github.llamalad7:mixinextras-forge:0.4.1')) { jarJar.ranged(it, '[0.4.1,)') }
+}
+
+def generated = file('../versions/1.20.1-fabric/build/generated/legacy/main/java')
+def prep = tasks.register('prepSources', Copy) {
+    from generated
+    exclude 'io/github/profetgit/farout/platform/fabric/**', 'io/github/profetgit/farout/platform/forge/**'
+    exclude 'io/github/profetgit/farout/mixin/client/KeyMappingAccess.java', 'io/github/profetgit/farout/mixin/client/KeyMappingMixin.java'
+    into layout.buildDirectory.dir('src')
+}
+sourceSets.main.java.srcDirs = [layout.buildDirectory.dir('src'), file('src')]
+tasks.named('compileJava') { dependsOn prep }
+sourceSets.main.resources.srcDirs = [file('../src/main/resources')]
+
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+processResources {
+    exclude 'fabric.mod.json', 'META-INF/neoforge.mods.toml'
+    def p = [version: project.version.toString(), mc: '1.20.1', mc_next: '1.21', name: props['mod.name'],
+             description: props['mod.description'], author: props['mod.author'], homepage: props['mod.homepage']]
+    inputs.properties(p)
+    filesMatching('META-INF/mods.toml') { expand(p) }
+    filesMatching('*.mixins.json') { filter { it.replace('JAVA_21', 'JAVA_17').replace('"required": true,', '"required": true,\n  "refmap": "far_out_zoom.refmap.json",') } }
+    filesMatching('pack.mcmeta') {
+        filter { line -> line.contains('"min_format"') ? '    "pack_format": 15' : (line.contains('"max_format"') ? null : line) }
+    }
+}
+
+jar {
+    from(rootProject.file('../LICENSE'))
+    manifest { attributes 'MixinConfigs': "${modId}.mixins.json" }
+    finalizedBy 'reobfJar'
+}
+
+tasks.jarJar.configure {
+    archiveClassifier = ''
+    manifest { attributes 'MixinConfigs': "${modId}.mixins.json" }
+    finalizedBy 'reobfJarJar'
+}
+reobf { jarJar { } }
+tasks.named('reobfJarJar') { finalizedBy 'publishForTests' }
+tasks.register('publishForTests', Copy) {
+    from layout.buildDirectory.dir('libs')
+    include "${modId}-*+1.20.1-forge.jar"
+    into file('../versions/1.20.1-forge/build/libs')
+}
+jar { archiveClassifier = 'slim' }

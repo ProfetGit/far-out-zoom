@@ -21,7 +21,7 @@ public abstract class MouseHandlerMixin {
 
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void farout$scroll(long window, double xOffset, double yOffset, CallbackInfo ci) {
-        if (window != minecraft.getWindow().handle() || minecraft.gui.screen() != null || minecraft.player == null) return;
+        if (window != io.github.profetgit.farout.client.Compat.window(minecraft) || io.github.profetgit.farout.client.Compat.screen(minecraft) != null || minecraft.player == null) return;
         if (Zoom.scroll(yOffset)) ci.cancel();
     }
 

@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui./*$ gfx*/ GuiGraphicsExtractor /**/;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
@@ -20,10 +21,30 @@ public final class ZoomConfigScreen extends OptionsSubScreen {
         super(parent, Minecraft.getInstance().options, Component.literal("Far Out Zoom"));
     }
 
+    //? if <1.21 {
+    /*private net.minecraft.client.gui.components.OptionsList list;
+
     @Override
+    protected void init() {
+        list = new net.minecraft.client.gui.components.OptionsList(minecraft, width, height, 32, height - 32, 25);
+        addOptions();
+        addWidget(list);
+        addRenderableWidget(net.minecraft.client.gui.components.Button.builder(net.minecraft.network.chat.CommonComponents.GUI_DONE, b -> onClose())
+            .bounds(width / 2 - 100, height - 27, 200, 20).build());
+    }
+
+    @Override
+    public void render(GuiGraphicsExtractor g, int mouseX, int mouseY, float partial) {
+        basicListRender(g, list, mouseX, mouseY, partial);
+        super.render(g, mouseX, mouseY, partial);
+    }
+
+    *///?} else {
+    @Override
+    //?}
     protected void addOptions() {
         Config c = Config.get();
-        list.addHeader(Component.literal("Zoom"));
+        Compat.header(list, "Zoom");
         list.addSmall(
             choice("Key", "Hold: zoomed while held. Toggle: press in, press out. Hybrid: hold for a quick look, tap to stay zoomed.",
                 Config.Mode.values(), c.mode, m -> switch (m) {
@@ -44,7 +65,7 @@ public final class ZoomConfigScreen extends OptionsSubScreen {
             new OptionInstance<>("Zoom speed", tip("How fast the view zooms in and out."),
                 (caption, v) -> Component.literal("Zoom speed: " + v * 25 + "%"), new OptionInstance.IntRange(2, 8), Math.round(c.zoomSpeed / 25F), v -> c.zoomSpeed = v * 25),
             bool("Springy zoom", "The zoom overshoots a touch and settles. Off: it glides in.", c.springy, v -> c.springy = v));
-        list.addHeader(Component.literal("Aim"));
+        Compat.header(list, "Aim");
         list.addSmall(
             new OptionInstance<>("Zoomed sensitivity", tip("100%: the view turns by the same amount on screen at every zoom, so aim stays steady. 0%: vanilla sensitivity."),
                 (caption, v) -> Component.literal("Zoomed sensitivity: " + v * 10 + "%"), new OptionInstance.IntRange(0, 15), Math.round(c.relativeSensitivity / 10F),
@@ -53,11 +74,13 @@ public final class ZoomConfigScreen extends OptionsSubScreen {
             bool("Ignore FOV effects", "Sprinting, Speed and drawing a bow don't change the zoomed view.", c.ignoreFovEffects, v -> c.ignoreFovEffects = v),
             bool("Steady view", "View bobbing fades out while zoomed; magnified, it shakes the whole view.", c.steadyView, v -> c.steadyView = v),
             bool("Hide hand", "The hand and held item slide out of view.", c.hideHand, v -> c.hideHand = v));
-        list.addHeader(Component.literal("Seeing far"));
+        Compat.header(list, "Seeing far");
         list.addSmall(
             bool("Far mobs", "Mobs, players, signs, chests and banners stay visible as far as the zoom brings them (up to what the server sends).",
                 c.farEntities, v -> c.farEntities = v),
+            //? if >=1.21.6 {
             bool("Clear haze", "Distance haze and rain fog thin out while zoomed. The edge of the render distance stays hidden.", c.clearHaze, v -> c.clearHaze = v),
+            //?}
             bool("Rangefinder", "Distance and name of what the crosshair points at.", c.rangefinder, v -> c.rangefinder = v),
             bool("Show zoom level", "The magnification under the crosshair.", c.showMagnification, v -> c.showMagnification = v),
             choice("Overlay", "What frames the zoomed view.", Config.Overlay.values(), c.overlay, o -> switch (o) {
@@ -71,11 +94,11 @@ public final class ZoomConfigScreen extends OptionsSubScreen {
                 v -> c.soundVolume = v * 10));
     }
 
-    static OptionInstance<Boolean> bool(String name, String tooltip, boolean value, OptionInstance.ValueUpdateListener<Boolean> set) {
+    static OptionInstance<Boolean> bool(String name, String tooltip, boolean value, Compat.Listener<Boolean> set) {
         return OptionInstance.createBoolean(name, tip(tooltip), value, set);
     }
 
-    static <T extends Enum<T>> OptionInstance<T> choice(String name, String tooltip, T[] values, T value, Function<T, String> label, OptionInstance.ValueUpdateListener<T> set) {
+    static <T extends Enum<T>> OptionInstance<T> choice(String name, String tooltip, T[] values, T value, Function<T, String> label, Compat.Listener<T> set) {
         Class<T> type = value.getDeclaringClass();
         Codec<T> codec = Codec.STRING.xmap(s -> Enum.valueOf(type, s), Enum::name);
         return new OptionInstance<>(name, tip(tooltip), (caption, v) -> Component.literal(name + ": " + label.apply(v)),

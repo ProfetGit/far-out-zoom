@@ -1,5 +1,6 @@
 package io.github.profetgit.farout.mixin.client;
 
+//? if >=1.21.6 {
 import io.github.profetgit.farout.client.Zoom;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -20,11 +21,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AtmosphericFogEnvironment.class)
 public abstract class AtmosphericFogEnvironmentMixin {
     @Inject(method = "setupFog", at = @At("TAIL"))
+    //? if >=1.21.11 {
     private void farout$haze(FogData fog, Camera camera, ClientLevel level, float renderDistance, DeltaTracker delta, CallbackInfo ci) {
+    //?} else {
+    /*private void farout$haze(FogData fog, net.minecraft.world.entity.Entity entity, net.minecraft.core.BlockPos pos, ClientLevel level, float renderDistance, DeltaTracker delta, CallbackInfo ci) {
+    *///?}
         float s = Zoom.hazeScale();
-        if (s <= 1 || Minecraft.getInstance().gui.hud.getBossOverlay().shouldCreateWorldFog()) return;
+        if (s <= 1 || io.github.profetgit.farout.client.Compat.boss(Minecraft.getInstance()).shouldCreateWorldFog()) return;
         fog.environmentalStart *= s;
         fog.environmentalEnd *= s;
         Zoom.hazeApplied = s;
     }
 }
+//?} else {
+/*import org.spongepowered.asm.mixin.Mixin;
+
+// Before 1.21.6 there is no open-air fog environment (only the render-distance fog), so there is no haze to clear.
+@Mixin(net.minecraft.client.renderer.FogRenderer.class)
+public abstract class AtmosphericFogEnvironmentMixin {
+}
+*///?}
