@@ -35,6 +35,15 @@ sys.path.insert(0, str(WS / "tools/ModJar"))
 import client  # noqa: E402
 import slots  # noqa: E402
 
+def _current(libs, mod_id, build):
+    """The jar of the version in gradle.properties; build/libs keeps older builds (and 0.2.8 sorts after 0.2.13)."""
+    version = re.search(r"^mod\.version=(.+)$", (ROOT / "gradle.properties").read_text(), re.M).group(1).strip()
+    jar = libs / f"{mod_id}-{version}+{build}.jar"
+    if not jar.is_file():
+        sys.exit(f"no {jar.name} in {libs}: build it first")
+    return jar
+
+
 _spec = importlib.util.spec_from_file_location("modjar_smoke", WS / "tools/ModJar" / "smoke.py")
 ms = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(ms)
@@ -54,10 +63,7 @@ def profile_mod(mc: str, glob: str) -> Path:
 
 
 def our_jar(mc: str) -> Path:
-    hits = sorted((ROOT / "versions" / f"{mc}-fabric" / "build/libs").glob(f"far_out_zoom-*+{mc}-fabric.jar"))
-    if not hits:
-        sys.exit(f"no Far Out Zoom jar for {mc}-fabric: build it first")
-    return hits[-1]
+    return _current(ROOT / "versions" / f"{mc}-fabric" / "build/libs", "far_out_zoom", f"{mc}-fabric")
 
 
 def free_port() -> int:
