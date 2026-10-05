@@ -1,11 +1,11 @@
 -- Far Out Zoom icon sprites (pack-icon-animation skill). Run through the aseprite MCP:
---   dofile("/home/emppu/Projects/Minecraft Datapacks/FarOut/dev/icon/draw_sprites.lua")
+--   dofile("/home/emppu/Projects/Minecraft Datapacks/mods/FarOut/dev/icon/draw_sprites.lua")
 -- The icon is the view through a scope; the scope rim, sky, hills and speed lines are drawn procedurally by
 -- dev/make_icon.py at every frame (so the zoom stays pixel-crisp). This script draws the sprites it places: the creeper
 -- (8 x 26 front view, drawn from scratch; vanilla's was only a shape reference) and its hiss flash, the "!", the far
 -- explosion poof, the backgrounds and the lettering. fx_puff and fx_spark are Veinminer's (copied via dev/icon/v1).
 dofile("/home/emppu/Projects/Minecraft Datapacks/.claude/skills/pack-icon-animation/assets/pixel_art.lua")
-local OUT = "/home/emppu/Projects/Minecraft Datapacks/FarOut/dev/icon/sprites/"
+local OUT = "/home/emppu/Projects/Minecraft Datapacks/mods/FarOut/dev/icon/sprites/"
 
 local CREEPER = { ["1"] = "#0F2E14", ["2"] = "#1E5A26", ["3"] = "#2E8436", ["4"] = "#45AD45", ["5"] = "#6ED163", ["6"] = "#A9EE8E", k = "#0B120C" }
 PA.sprite_from_grid(OUT .. "creeper", {

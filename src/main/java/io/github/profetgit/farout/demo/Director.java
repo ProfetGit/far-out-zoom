@@ -129,6 +129,7 @@ public final class Director {
             case "sens", "hotbar", "controls" -> 40;
             case "screen", "toggle", "hybrid" -> 80;
             case "overlays" -> 150;
+            case "rebind" -> 120;
             case "show" -> 200;
             case "horizon" -> 700;
             default -> 60;
@@ -260,6 +261,37 @@ public final class Director {
                     settingsError.isEmpty() ? "the settings screen builds and stays open" : settingsError);
                 if (t == 130) io.github.profetgit.farout.client.Compat.setScreen(mc, null);
             }
+            case "rebind" -> {
+                // what a player does in Controls: the zoom key moved to G, Toggle mode; then press, scroll, press again
+                var g = com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM.getOrCreate(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+                if (t == 2) {
+                    Config.get().mode = Config.Mode.TOGGLE;
+                    mc.options.setKey(Keys.ZOOM, g);
+                    KeyMapping.resetMapping();
+                }
+                if (t == 10) {
+                    KeyMapping.click(g);
+                    KeyMapping.set(g, true);
+                }
+                if (t == 13) KeyMapping.set(g, false);
+                if (t == 40) {
+                    double want = expected(baseFov, 4);
+                    double fov = fov(mc);
+                    check("rebound_zoom", Zoom.active() && Math.abs(fov - want) < want * 0.02, String.format(Locale.ROOT, "key %s, active %s, fov %.3f, want %.3f, mode %s, screen %s, isDown %s", Keys.ZOOM.saveString(), Zoom.active(), fov, want, Config.get().mode, io.github.profetgit.farout.client.Compat.screen(mc), Keys.ZOOM.isDown()));
+                }
+                if (t == 45) scroll(mc, 2);
+                if (t == 80) {
+                    double want = expected(baseFov, 8);
+                    double fov = fov(mc);
+                    check("rebound_scroll", Math.abs(fov - want) < want * 0.02, String.format(Locale.ROOT, "fov %.3f, want %.3f (8x)", fov, want));
+                }
+                if (t == 85) {
+                    KeyMapping.click(g);
+                    KeyMapping.set(g, true);
+                }
+                if (t == 87) KeyMapping.set(g, false);
+                if (t == 115) check("rebound_off", !Zoom.zoomed(), "a second press zooms out");
+            }
             case "controls" -> {
                 // the Controls screen sorts every binding (category order first); an unknown category used to crash it
                 if (t == 5) {
@@ -369,6 +401,10 @@ public final class Director {
     }
 
     static void release(Minecraft mc) {
+        if (!Keys.ZOOM.isDefault()) {
+            mc.options.setKey(Keys.ZOOM, Keys.ZOOM.getDefaultKey());
+            KeyMapping.resetMapping();
+        }
         hold(false);
         Zoom.debugReset();
         look(mc, -90, 0);
