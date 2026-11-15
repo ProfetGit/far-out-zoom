@@ -5,7 +5,7 @@
 <a href="https://ko-fi.com/profetgit"><img src="https://raw.githubusercontent.com/ProfetGit/assets/main/buttons/kofi.webp" alt="Ko-fi" width="23.96%"></a>
 </p>
 
-**The horizon, up close.** Hold C and the view springs in on whatever is out there: a creeper on the far hill, a village across the valley, a friend's base on the horizon. Scroll to zoom further, up to 64x, with aim that stays steady and far mobs that stay visible. Client-side only, for Fabric, Quilt, NeoForge and Forge on Minecraft 26.2 and 26.3.
+**The horizon, up close.** Hold C and the view springs in on whatever is out there: a creeper on the far hill, a village across the valley, a friend's base on the horizon. Scroll to zoom further, up to 64x, with aim that stays steady and far mobs that stay visible. Client-side only, for Fabric, Quilt, NeoForge and Forge on Minecraft 26.3, 26.2, 1.21.11, 1.21.1 and 1.20.1 (also 1.21.8 and 1.21.4 on Fabric and Quilt).
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/ProfetGit/far-out-zoom/main/docs/clips/camp.webp" alt="Hold C: the camp on the far shore springs into view" width="49%">
