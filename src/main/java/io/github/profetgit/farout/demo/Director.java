@@ -263,10 +263,10 @@ public final class Director {
             }
             case "rebind" -> {
                 // what a player does in Controls: the zoom key moved to G, Toggle mode; then press, scroll, press again
-                var g = com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM.getOrCreate(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+                var g = com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.g");
                 if (t == 2) {
                     Config.get().mode = Config.Mode.TOGGLE;
-                    mc.options.setKey(Keys.ZOOM, g);
+                    Keys.ZOOM.setKey(g);
                     KeyMapping.resetMapping();
                 }
                 if (t == 10) {
@@ -402,7 +402,7 @@ public final class Director {
 
     static void release(Minecraft mc) {
         if (!Keys.ZOOM.isDefault()) {
-            mc.options.setKey(Keys.ZOOM, Keys.ZOOM.getDefaultKey());
+            Keys.ZOOM.setKey(Keys.ZOOM.getDefaultKey());
             KeyMapping.resetMapping();
         }
         hold(false);

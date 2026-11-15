@@ -27,3 +27,6 @@ dev/icon/bg_options.png
 release-art/
 dev/icon/frames60/
 dev/icon/banner_frames60/
+forge-*/build/
+forge-*/run/
+forge-*/.gradle/

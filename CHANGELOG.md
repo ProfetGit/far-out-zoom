@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.9
+
+- Now also runs on NeoForge and Forge for Minecraft Java 1.21.1 and 1.21.11. Nothing changes on the other versions.
+
+## 0.2.8
+
+- First 26.2 and 26.3 build since 0.2.2: includes the frame-timer zoom animation (0.2.3). Release channel; no other changes.
+
 ## 0.2.7
 
 - Now also runs on Minecraft Java 1.20.1 (Fabric, Quilt and Forge). Nothing changes on the other versions.

@@ -22,7 +22,8 @@ public abstract class KeyMappingMixin {
         if (mc != null && mc.options != null && (Object) this == mc.options.keySaveHotbarActivator && Zoom.sharesHotbarKey(mc)) cir.setReturnValue(false);
     }
 
-    //? if <1.21.9 {
+    // Fabric only: NeoForge and Forge replace MAP with a lookup that holds every binding of a key
+    //? if fabric && <1.21.9 {
     /*@Inject(method = "resetMapping", at = @At("RETURN"))
     private static void farout$zoomKeyWins(org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
         KeyMappingAccess.farout$map().put(((KeyMappingAccess) io.github.profetgit.farout.client.Keys.ZOOM).farout$key(), io.github.profetgit.farout.client.Keys.ZOOM);

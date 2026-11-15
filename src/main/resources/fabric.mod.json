@@ -10,7 +10,9 @@
   "icon": "assets/far_out_zoom/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": ["io.github.profetgit.farout.platform.fabric.FabricEntry"],
+    "client": [
+      "io.github.profetgit.farout.platform.fabric.FabricEntry"
+    ],
     "modmenu": ["io.github.profetgit.farout.platform.fabric.ModMenuEntry"]
   },
   "mixins": ["far_out_zoom.mixins.json"],
