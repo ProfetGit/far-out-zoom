@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.10
+
+- Fixed the rangefinder under water: it named the water around you instead of the block or mob you were zooming in on. It now looks through the water you are in (also lava).
+
 ## 0.2.9
 
 - Now also runs on NeoForge and Forge for Minecraft Java 1.21.1 and 1.21.11. Nothing changes on the other versions.

@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -16,7 +17,7 @@ import org.joml.Vector3fc;
 
 /**
  * What the crosshair points at while zoomed, out to the edge of the loaded world: the nearest block or fluid surface on
- * the camera ray, or a nearer entity. Entities are named by type (players too), so the zoom doesn't read name tags
+ * the camera ray (fluids are skipped while the camera is inside one), or a nearer entity. Entities are named by type (players too), so the zoom doesn't read name tags
  * further away than vanilla shows them.
  */
 public final class Rangefinder {
@@ -52,7 +53,11 @@ public final class Rangefinder {
         double reach = mc.options.getEffectiveRenderDistance() * 16 + 32;
         Vec3 to = from.add(dir.scale(reach));
         Entity self = mc.getCameraEntity() == null ? mc.player : mc.getCameraEntity();
-        BlockHitResult block = mc.level.clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, self));
+        BlockPos camPos = BlockPos.containing(from);
+        FluidState camFluid = mc.level.getFluidState(camPos);
+        boolean submerged = !camFluid.isEmpty() && from.y < camPos.getY() + camFluid.getHeight(mc.level, camPos);
+        ClipContext.Fluid fluids = submerged ? ClipContext.Fluid.NONE : ClipContext.Fluid.ANY;
+        BlockHitResult block = mc.level.clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, fluids, self));
         double best = block.getType() == HitResult.Type.MISS ? Double.MAX_VALUE : block.getLocation().distanceToSqr(from);
         Entity hitEntity = null;
         Vec3 hitAt = null;

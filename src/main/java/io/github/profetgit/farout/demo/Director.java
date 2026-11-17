@@ -112,6 +112,9 @@ public final class Director {
             "fill 99 " + (G + 1) + " 3 101 " + (G + 3) + " 5 minecraft:stone",
             "setblock 100 " + (G + 4) + " 4 minecraft:oak_sign[rotation=4]",
             "summon minecraft:cow 110.5 " + (G + 1) + " 0.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}",
+            "fill 0 " + (G + 1) + " 38 21 " + (G + 5) + " 44 minecraft:glass hollow",
+            "fill 1 " + (G + 1) + " 39 20 " + (G + 4) + " 43 minecraft:water",
+            "setblock 12 " + (G + 2) + " 40 minecraft:diamond_block",
             "tp " + p + " 0.5 " + (G + 1) + " 0.5 -90 0");
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         io.github.profetgit.farout.client.Compat.selectSlot(mc, 0);
@@ -124,7 +127,7 @@ public final class Director {
 
     static int length(String s) {
         return switch (s) {
-            case "zoom", "scroll", "range" -> 90;
+            case "zoom", "scroll", "range", "underwater" -> 90;
             case "far", "fog" -> 70;
             case "sens", "hotbar", "controls" -> 40;
             case "screen", "toggle", "hybrid" -> 80;
@@ -224,6 +227,28 @@ public final class Director {
                     double want = 110.5 - 0.45 - 0.5;
                     check("rangefinder_entity", Math.abs(Rangefinder.distance - want) < 0.3 && "Cow".equals(Rangefinder.target),
                         String.format(Locale.ROOT, "%.3f m to '%s', want ~%.2f to Cow", Rangefinder.distance, Rangefinder.target, want));
+                    look(mc, -90, 0);
+                }
+            }
+            case "underwater" -> {
+                // the camera sits in water: the reading names what is in the water, not the water itself
+                if (t == 0) {
+                    cmd(mc, "tp " + name(mc) + " 1.5 " + (G + 1) + " 40.5 -90 0",
+                        "summon minecraft:cow 7.5 " + (G + 1) + " 42.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}");
+                    look(mc, -90, 0);
+                }
+                hold(t >= 5 && t < 85);
+                if (t == 40) {
+                    double want = 12 - 1.5;
+                    check("underwater_block", Math.abs(Rangefinder.distance - want) < 0.05 && "Block of Diamond".equals(Rangefinder.target),
+                        String.format(Locale.ROOT, "%.3f m to '%s', want %.2f to Block of Diamond under water (label '%s')", Rangefinder.distance, Rangefinder.target, want, Rangefinder.label()));
+                    double dx = 7.5 - 1.5, dz = 42.5 - 40.5, dy = EYE - (G + 1 + 0.7);
+                    look(mc, (float) Math.toDegrees(Math.atan2(-dx, dz)), (float) Math.toDegrees(Math.atan2(dy, Math.hypot(dx, dz))));
+                }
+                if (t == 70) {
+                    check("underwater_entity", Rangefinder.distance > 5 && Rangefinder.distance < 6.5 && "Cow".equals(Rangefinder.target),
+                        String.format(Locale.ROOT, "%.3f m to '%s', want ~5.8 to Cow under water", Rangefinder.distance, Rangefinder.target));
+                    cmd(mc, "kill @e[type=minecraft:cow,x=7.5,y=" + (G + 1) + ",z=42.5,distance=..3]");
                     look(mc, -90, 0);
                 }
             }
